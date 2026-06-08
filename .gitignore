@@ -1,0 +1,27 @@
+# Build output / packages
+RPMS/
+SRPMS/
+*.rpm
+build/
+
+# Qt / qmake generated
+.qmake.stash
+Makefile
+Makefile.*
+*.o
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.pro.user
+.moc/
+.obj/
+.rcc/
+.uic/
+
+# Compiled translations (generated from .ts)
+*.qm
+
+# Compiled binary (TARGET) and SDK-generated files
+/harbour-sage
+documentation.list

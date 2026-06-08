@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+X-Nemo-Application-Type=silica-qt5
+Icon=harbour-sage
+Exec=harbour-sage
+Name=Sage
+# This is what shows under the icon on your phone's home grid.
+Comment=Private AI chat powered by your own Ollama server
