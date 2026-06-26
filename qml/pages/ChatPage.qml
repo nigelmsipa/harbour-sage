@@ -52,7 +52,9 @@ Page {
         }
 
         // 4. Dial the server and stream the answer into the placeholder bubble.
-        currentRequest = Ollama.sendChat(app.serverUrl, app.modelName, history, {
+        currentRequest = Ollama.sendChat(app.provider, app.activeServerUrl(),
+                                         app.activeApiKey(), app.activeModelName(),
+                                         history, {
             onDelta: function(chunk) {
                 var current = app.conversation.get(replyIndex).content;
                 app.conversation.setProperty(replyIndex, "content", current + chunk);
@@ -120,7 +122,7 @@ Page {
 
         header: PageHeader {
             title: "Sage"
-            description: app.modelName
+            description: app.providerLabel() + " · " + app.activeModelName()
         }
 
         delegate: MessageItem {
@@ -132,7 +134,7 @@ Page {
         ViewPlaceholder {
             enabled: app.conversation.count === 0
             text: qsTr("Say hello")
-            hintText: qsTr("Chatting with %1").arg(app.modelName)
+            hintText: qsTr("Chatting with %1").arg(app.activeModelName())
         }
 
         // Keep the typing dots pinned just under the last bubble.
@@ -296,13 +298,24 @@ Page {
         x: open ? 0 : -width
         Behavior on x { NumberAnimation { duration: 220; easing.type: Easing.InOutQuad } }
 
-        // The whole backdrop is already blurred (drawerOverlay above), so the
-        // panel just needs a light tint over it for legibility of its list.
         color: "transparent"
 
+        ShaderEffectSource {
+            id: sidebarSnapshot
+            anchors.fill: parent
+            sourceItem: chatView
+            live: sidebar.open
+            visible: false
+            textureSize: Qt.size(Math.max(1, width / 12), Math.max(1, height / 12))
+        }
+        FastBlur {
+            anchors.fill: parent
+            source: sidebarSnapshot
+            radius: 64
+        }
         Rectangle {
             anchors.fill: parent
-            color: Theme.rgba(Theme.overlayBackgroundColor, 0.48)
+            color: Theme.rgba(Theme.overlayBackgroundColor, 0.18)
         }
         // Swallow taps on blank panel areas so they don't close the drawer.
         MouseArea { anchors.fill: parent }

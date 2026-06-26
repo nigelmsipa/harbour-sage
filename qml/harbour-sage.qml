@@ -17,21 +17,104 @@ ApplicationWindow {
     // They start from whatever was saved last time (or the defaults below the
     // first time you run). When a screen changes them, we write the new value
     // back to disk so it's remembered next launch.
+    property string provider: cfgProvider.value
+
+    // OpenRouter / OpenAI-compatible provider
     property string serverUrl: cfgServerUrl.value
     property string modelName: cfgModelName.value
+    property string apiKey: cfgApiKey.value
 
+    // Google Gemini provider
+    property string googleApiKey: cfgGoogleApiKey.value
+    property string googleModelName: cfgGoogleModelName.value
+
+    // Local Ollama provider
+    property string ollamaServerUrl: cfgOllamaServerUrl.value
+    property string ollamaModelName: cfgOllamaModelName.value
+
+    onProviderChanged: cfgProvider.value = provider
     onServerUrlChanged: cfgServerUrl.value = serverUrl
     onModelNameChanged: cfgModelName.value = modelName
+    onApiKeyChanged: cfgApiKey.value = apiKey
+    onGoogleApiKeyChanged: cfgGoogleApiKey.value = googleApiKey
+    onGoogleModelNameChanged: cfgGoogleModelName.value = googleModelName
+    onOllamaServerUrlChanged: cfgOllamaServerUrl.value = ollamaServerUrl
+    onOllamaModelNameChanged: cfgOllamaModelName.value = ollamaModelName
+
+    function providerLabel() {
+        if (provider === "google")
+            return qsTr("Google")
+        if (provider === "ollama")
+            return qsTr("Local Ollama")
+        return qsTr("OpenRouter")
+    }
+
+    function activeServerUrl() {
+        if (provider === "google")
+            return "https://generativelanguage.googleapis.com/v1beta"
+        if (provider === "ollama")
+            return ollamaServerUrl
+        return serverUrl
+    }
+
+    function activeApiKey() {
+        if (provider === "google")
+            return googleApiKey
+        if (provider === "ollama")
+            return ""
+        return apiKey
+    }
+
+    function activeModelName() {
+        if (provider === "google")
+            return googleModelName
+        if (provider === "ollama")
+            return ollamaModelName
+        return modelName
+    }
 
     // Nemo.Configuration is Sailfish's built-in "saved settings" drawer.
+    // Defaults point at OpenRouter (hosted) so a fresh install just needs an
+    // API key pasted in Settings. To run on your own GPU instead, change the
+    // server address to your Ollama box (e.g. http://100.120.174.125:11434).
+    ConfigurationValue {
+        id: cfgProvider
+        key: "/apps/harbour-sage/provider"
+        defaultValue: "openrouter"
+    }
     ConfigurationValue {
         id: cfgServerUrl
         key: "/apps/harbour-sage/serverUrl"
-        defaultValue: "http://100.120.174.125:11434"
+        defaultValue: "https://openrouter.ai/api/v1"
     }
     ConfigurationValue {
         id: cfgModelName
         key: "/apps/harbour-sage/modelName"
+        defaultValue: "openai/gpt-oss-20b:free"
+    }
+    ConfigurationValue {
+        id: cfgApiKey
+        key: "/apps/harbour-sage/apiKey"
+        defaultValue: ""
+    }
+    ConfigurationValue {
+        id: cfgGoogleApiKey
+        key: "/apps/harbour-sage/googleApiKey"
+        defaultValue: ""
+    }
+    ConfigurationValue {
+        id: cfgGoogleModelName
+        key: "/apps/harbour-sage/googleModelName"
+        defaultValue: "gemini-2.5-flash"
+    }
+    ConfigurationValue {
+        id: cfgOllamaServerUrl
+        key: "/apps/harbour-sage/ollamaServerUrl"
+        defaultValue: "http://100.120.174.125:11434"
+    }
+    ConfigurationValue {
+        id: cfgOllamaModelName
+        key: "/apps/harbour-sage/ollamaModelName"
         defaultValue: "gpt-oss:20b"
     }
 
